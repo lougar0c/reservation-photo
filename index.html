@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <meta charset="UTF-8">
+  <title>Réservation Photo</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #fff;
+      margin: 0;
+      padding: 0;
+      animation: fadeIn 0.5s ease-in;
+    }
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+    h1 {
+      text-align: center;
+      margin-top: 40px;
+      color: #9966FF;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #9966FF;
+      margin-bottom: 40px;
+    }
+
+    .header {
+      background: #000000;
+      padding: 40px 0;
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      padding: 40px;
+    }
+
+    .card {
+  background: #6666FF;
+  color: white;
+  padding: 45px;
+  border-radius: 20px;
+  width: 350px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+    .card h2 {
+      margin-bottom: 20px;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      border: none;
+      background: #111827;
+      color: white;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      background: #6b7280;
+      color: white;
+      cursor: pointer;
+      background: linear-gradient(135deg, #000000, #000000);
+  font-weight: bold;
+    }
+
+    button:hover {
+      background: #4b5563;
+      opacity: 0.9;
+    }
+
+    .calendar {
+      background: white;
+      border-radius: 10px;
+      height: 200px;
+    }
+
+    .message {
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    .creneau-btn {
+      display: inline-block;
+      margin: 5px;
+      padding: 10px 10px;
+      border-radius: 10px;
+      background: #1f2937;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .creneau-btn:hover {
+      background: #374151;
+    }
+
+    .selected {
+      background: #2563eb;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <h1>Rendez-vous photo avec Lougaroc</h1>
+    <p class="subtitle">Réservez votre créneau en quelques étapes</p>
+  </div>
+
+  <div class="container">
+
+    <!-- Calendrier -->
+    <div class="card">
+      <h2>Sélectionnez une date</h2>
+      <input type="text" id="date" placeholder="Choisir une date">
+      <div class="calendar"></div>
+    
+    <!-- creneaux -->
+  <div id="creneaux"></div>
+
+    </div>
+
+    <!-- Formulaire -->
+    <div class="card">
+      <h2>Vos informations</h2>
+
+      <input type="text" id="nom" placeholder="Nom complet">
+      <input type="email" id="email" placeholder="Email">
+      <input type="tel" id="tel" placeholder="Téléphone">
+      <textarea id="cosplay" placeholder="Décrivez votre cosplay"></textarea>
+
+      <button onclick="reserver()">Confirmer le rendez-vous</button>
+
+      <p id="message" class="message"></p>
+    </div>
+
+  </div>
+
+  <script>
+window.reserver = async function() {
+  const data = {
+    nom: document.getElementById("nom").value,
+    email: document.getElementById("email").value,
+    date: document.getElementById("date").value,
+    heure: heureSelectionnee,
+    tel: document.getElementById("tel").value,
+    cosplay: document.getElementById("cosplay").value
+  };
+
+  if (!data.nom || !data.email || !data.date || !data.heure) {
+    alert("❌ Remplis tous les champs");
+    return;
+  }
+
+  const res = await fetch("fetch("https://reservation-photo.onrender.com/reserve", {", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(data)
+  });
+
+  const text = await res.text();
+  alert(text);
+};
+
+
+document.addEventListener("DOMContentLoaded", () => {
+})
+
+let heureSelectionnee = null;
+
+ flatpickr("#date", {
+  minDate: "today",
+  dateFormat: "Y-m-d",
+  onChange: function() {
+    afficherCreneaux();
+  }
+ });
+
+function afficherCreneaux() {
+  const heures = ["14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30",];
+  const container = document.getElementById("creneaux");
+
+  container.innerHTML = "";
+
+  heures.forEach(h => {
+    const btn = document.createElement("div");
+    btn.innerText = h;
+    btn.className = "creneau-btn";
+
+    btn.onclick = () => {
+      document.querySelectorAll(".creneau-btn").forEach(b => b.classList.remove("selected"));
+      btn.classList.add("selected");
+      heureSelectionnee = h;
+    };
+
+    container.appendChild(btn);
+  });
+}
+
+// Quand on change la date
+document.getElementById("date").addEventListener("change", afficherCreneaux);
+
+  </script>
+
+</body>
+</html>
